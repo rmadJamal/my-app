@@ -3,14 +3,16 @@ import React, { useState } from 'react'
 import AppContext from './AppContext'
 
 const AppProvider = (props) => {
-    const[cart, setCart] = useState([])
+  const [cart, setCart] = useState([])
+  const [user, setuser] = useState()
   return (
     <AppContext.Provider value={{
-
-        cart,
-        setCart
+      user,
+      setuser,
+      cart,
+      setCart
     }}>
-        {props.children}
+      {props.children}
     </AppContext.Provider>
   )
 }

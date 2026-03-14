@@ -1,39 +1,63 @@
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
+import { Image, StyleSheet, View, Animated, Dimensions } from 'react-native'
 import { Images } from '@/assets/images/Images'
 import { useNavigation } from 'expo-router'
 
-const index = () => {
+const { width, height } = Dimensions.get('window');
+
+const Index = () => {
     const nav = useNavigation()
-    setTimeout(() => {
-        nav.navigate("home")
+    
+    // إعدادات الحركة (البداية من 0)
+    const fadeAnim = useRef(new Animated.Value(0)).current; 
+    const scaleAnim = useRef(new Animated.Value(0.5)).current; 
 
-    }, 2 * 1000)
+    useEffect(() => {
+        // تشغيل الحركة عند فتح الصفحة
+        Animated.parallel([
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 1500,
+                useNativeDriver: true,
+            }),
+            Animated.spring(scaleAnim, {
+                toValue: 1,
+                friction: 4,
+                useNativeDriver: true,
+            })
+        ]).start();
+
+        // الانتقال بعد 3 ثوانٍ
+        const timer = setTimeout(() => {
+            nav.navigate("home")
+        }, 3000);
+
+        return () => clearTimeout(timer);
+    }, []);
+
     return (
-        <View>
-            {/* <Pressable onPress={() => {
-                    nav.navigate("home")
-
+        <View style={styles.container}>
+            <Animated.View style={{
+                opacity: fadeAnim,
+                transform: [{ scale: scaleAnim }]
             }}>
-                <Text>go to home</Text>
-            </Pressable> */}
-            <Image source={Images.cofe} style={styles.cofe} />
-
-
-
+                <Image source={Images.cofe} style={styles.cofe} resizeMode="contain" />
+            </Animated.View>
         </View>
     )
 }
 
-export default index
+export default Index
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#2e7d32', // لون الخلفية يطابق الـ Header ليكون الانتقال ناعماً
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     cofe: {
-        width: 440,
-        height: 440,
-        marginTop: 66,
+        width: width * 0.8, // عرض الصورة 80% من عرض الشاشة لضمان التناسق
+        height: width * 0.8,
     }
 })
-
-
-
